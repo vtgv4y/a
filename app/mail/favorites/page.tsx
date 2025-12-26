@@ -28,44 +28,44 @@ const DeleteConfirmModal = memo(({ isOpen, mailName, onConfirm, onCancel }: Dele
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-black/50 transition-opacity duration-300 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 transition-opacity duration-300"
         onClick={onCancel}
       />
 
       <div
-        className="relative w-full max-w-[320px] bg-black/40 border border-white/20 rounded-[20px] overflow-hidden shadow-2xl"
+        className="relative w-full max-w-sm bg-card border border-border rounded-lg shadow-lg"
         style={{
-          animation: 'scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          animation: 'scaleIn 0.2s ease-out',
           willChange: 'transform'
         }}
       >
-        <div className="p-5 text-center space-y-4">
+        <div className="p-6 text-center space-y-4">
           <div className="flex justify-center">
-            <div className="bg-red-500/20 p-3 rounded-full">
-              <Icon name="delete" className="w-8 h-8 text-red-400" />
+            <div className="bg-red-100 dark:bg-red-900/20 p-3 rounded-full">
+              <Icon name="delete" className="w-6 h-6 text-red-600 dark:text-red-400" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-[17px] font-bold text-white tracking-tight">
+            <h3 className="text-lg font-semibold text-foreground">
               确认删除
             </h3>
-            <p className="text-[14px] text-white/70 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               确定要从收藏中移除<br />
-              <span className="font-semibold text-white">{mailName}</span> 吗?
+              <span className="font-semibold text-foreground">{mailName}</span> 吗?
             </p>
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3">
             <button
               onClick={() => { haptic(20); onCancel(); }}
-              className="flex-1 py-3 rounded-[14px] bg-white/10 text-white font-semibold text-[15px] active:scale-95 transition-all touch-manipulation"
+              className="flex-1 py-2 rounded-lg bg-muted hover:bg-accent text-foreground font-medium text-sm transition-colors"
             >
               取消
             </button>
             <button
               onClick={() => { haptic(30); onConfirm(); }}
-              className="flex-1 py-3 rounded-[14px] bg-gradient-to-r from-red-500/90 to-red-600/90 text-white font-semibold text-[15px] shadow-lg active:scale-95 transition-all touch-manipulation"
+              className="flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-sm transition-colors"
             >
               删除
             </button>
@@ -75,7 +75,7 @@ const DeleteConfirmModal = memo(({ isOpen, mailName, onConfirm, onCancel }: Dele
 
       <style jsx>{`
         @keyframes scaleIn {
-          from { transform: scale(0.8); opacity: 0; }
+          from { transform: scale(0.95); opacity: 0; }
           to { transform: scale(1); opacity: 1; }
         }
       `}</style>
@@ -95,49 +95,48 @@ const FavoriteCard = memo(({ mail, onDelete, onCopy, copiedId }: FavoriteCardPro
   const isCopied = copiedId === mail.id;
 
   return (
-    <div className="bg-black/30 rounded-[20px] overflow-hidden border border-white/20 shadow-xl transition-all duration-200 hover:border-white/30">
+    <div className="bg-card rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow">
       <div className="p-4 space-y-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0 flex items-center gap-2">
-            <Icon name="star" className="w-4 h-4 text-[#FFD700] shrink-0 drop-shadow-md" />
-            <h3 className="text-[17px] font-bold text-white tracking-tight drop-shadow-md truncate">
+            <Icon name="star" className="w-4 h-4 text-yellow-500 shrink-0" />
+            <h3 className="text-base font-semibold text-foreground truncate">
               {mail.name}
             </h3>
           </div>
           <button
             onClick={() => { haptic(30); onDelete(mail); }}
-            className="shrink-0 p-2 rounded-full bg-red-500/20 active:bg-red-500/30 transition-all active:scale-95 touch-manipulation"
+            className="shrink-0 p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors"
           >
-            <Icon name="delete" className="w-5 h-5 text-red-400" />
+            <Icon name="delete" className="w-5 h-5 text-red-600 dark:text-red-400" />
           </button>
         </div>
 
         {mail.description && (
-          <p className="text-[13px] text-white/80 drop-shadow-sm">
+          <p className="text-xs text-muted-foreground">
             {mail.description}
           </p>
         )}
 
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex items-center gap-2">
           <a
             href={mail.url}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => haptic(20)}
-            className="flex-1 py-2.5 px-4 bg-gradient-to-r from-[#007AFF]/90 to-[#0055b3]/90 rounded-[14px] text-white font-semibold text-[15px] text-center shadow-lg active:scale-[0.97] transition-all touch-manipulation truncate"
+            className="flex-1 py-2 px-4 bg-primary hover:bg-primary/90 rounded-lg text-primary-foreground font-medium text-sm text-center shadow-sm transition-colors truncate"
           >
             访问网站
           </a>
           <button
             onClick={() => { haptic(30); onCopy(mail.url, mail.id); }}
-            className="shrink-0 p-2.5 bg-white/10 rounded-[14px] active:bg-white/20 transition-all active:scale-95 touch-manipulation relative overflow-hidden"
+            className="shrink-0 p-2 bg-muted hover:bg-accent rounded-lg transition-colors"
           >
-            <div className={`transition-all duration-300 ${isCopied ? 'opacity-0 scale-90' : 'opacity-100 scale-100'}`}>
-              <Icon name="copy" className="w-5 h-5 text-white/80" />
-            </div>
-            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isCopied ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
-              <Icon name="check" className="w-5 h-5 text-[#34C759]" />
-            </div>
+            {isCopied ? (
+              <Icon name="check" className="w-5 h-5 text-primary" />
+            ) : (
+              <Icon name="copy" className="w-5 h-5 text-muted-foreground" />
+            )}
           </button>
         </div>
       </div>
@@ -187,47 +186,47 @@ export default function FavoritesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen relative font-sans text-white pb-10 selection:bg-blue-400/30 overflow-x-hidden">
-      <div className="relative z-10">
-        <header className="fixed top-0 left-0 right-0 h-[52px] z-40 flex items-center justify-between px-4 pt-2 transition-all duration-300">
-          <h1 className="text-[17px] font-semibold text-white tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-40 bg-background border-b border-border">
+        <div className="flex items-center justify-between px-4 py-3">
+          <h1 className="text-lg font-semibold text-foreground">
             我的收藏
           </h1>
           <MenuButton onClick={() => { haptic(20); setShowMenu(true); }} />
-        </header>
+        </div>
+      </header>
 
-        <main className="max-w-[420px] mx-auto px-5 pt-20 pb-10">
-          {favorites.length > 0 ? (
-            <div className="space-y-3">
-              {favorites.map((mail) => (
-                <FavoriteCard
-                  key={mail.id}
-                  mail={mail}
-                  onDelete={handleDeleteClick}
-                  onCopy={handleCopy}
-                  copiedId={copiedId}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="bg-black/30 px-8 py-8 rounded-[20px] border border-white/20 shadow-xl text-center space-y-4">
-                <div className="flex justify-center">
-                  <Icon name="inbox" className="w-12 h-12 text-white/60" />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-[17px] font-semibold text-white drop-shadow-md">
-                    暂无收藏
-                  </p>
-                  <p className="text-[14px] text-white/70 drop-shadow-sm">
-                    在临时邮箱页面点击星标添加收藏
-                  </p>
-                </div>
+      <main className="max-w-2xl mx-auto px-4 py-6">
+        {favorites.length > 0 ? (
+          <div className="space-y-3">
+            {favorites.map((mail) => (
+              <FavoriteCard
+                key={mail.id}
+                mail={mail}
+                onDelete={handleDeleteClick}
+                onCopy={handleCopy}
+                copiedId={copiedId}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="bg-card px-8 py-8 rounded-lg border border-border shadow-sm text-center space-y-4">
+              <div className="flex justify-center">
+                <Icon name="inbox" className="w-12 h-12 text-muted-foreground" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-base font-semibold text-foreground">
+                  暂无收藏
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  在临时邮箱页面点击星标添加收藏
+                </p>
               </div>
             </div>
-          )}
-        </main>
-      </div>
+          </div>
+        )}
+      </main>
 
       <NavigationMenu isOpen={showMenu} onClose={() => setShowMenu(false)} />
       <DeleteConfirmModal

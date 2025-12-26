@@ -16,7 +16,6 @@ import {
   getAllDomains
 } from '@/lib/generator';
 
-// 动态导入国旗库
 const loadFlagIcon = async (countryCode: string) => {
   try {
     const flags = await import('country-flag-icons/react/3x2');
@@ -54,14 +53,14 @@ const CountryFlag = memo(({ countryCode, className = "w-8 h-6" }: { countryCode:
 
   if (isLoading || !FlagComponent) {
     return (
-      <div className={`${className} bg-primary rounded flex items-center justify-center`}>
-        <Icon name="globe" className="w-4 h-4 text-primary-foreground" />
+      <div className={`${className} bg-muted rounded flex items-center justify-center`}>
+        <Icon name="globe" className="w-4 h-4 text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className={`${className} rounded overflow-hidden shadow-sm border border-border`}>
+    <div className={`${className} rounded overflow-hidden border border-border`}>
       <FlagComponent className="w-full h-full object-cover" title={countryCode} />
     </div>
   );
@@ -86,8 +85,8 @@ const InfoRow = memo(({ label, value, onCopy, isCopied, isLast = false }: {
 }) => (
   <div
     onClick={onCopy}
-    className={`group relative flex items-center justify-between py-3.5 px-4 cursor-pointer transition-colors hover:bg-accent rounded-md ${
-      isCopied ? 'bg-primary/10' : ''
+    className={`group flex items-center justify-between py-3.5 px-4 cursor-pointer transition-colors hover:bg-accent/50 ${
+      isCopied ? 'bg-accent' : ''
     } ${!isLast ? 'border-b border-border' : ''}`}
   >
     <span className="text-sm font-medium text-muted-foreground w-20 shrink-0">
@@ -96,31 +95,27 @@ const InfoRow = memo(({ label, value, onCopy, isCopied, isLast = false }: {
 
     <div className="flex items-center gap-3 min-w-0 flex-1 justify-end h-6 relative overflow-hidden">
       <span
-        className={`absolute right-0 text-sm font-semibold truncate transition-all duration-300 ${
-          isCopied ? 'opacity-0 translate-y-4 scale-95' : 'opacity-100 translate-y-0 scale-100 text-foreground'
+        className={`absolute right-0 text-sm font-semibold truncate transition-all duration-200 ${
+          isCopied ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0 text-foreground'
         }`}
       >
         {value || '---'}
       </span>
 
       <div
-        className={`absolute right-0 flex items-center gap-1.5 transition-all duration-300 ${
-          isCopied ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-90 pointer-events-none'
+        className={`absolute right-0 flex items-center gap-1.5 transition-all duration-200 ${
+          isCopied ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
         }`}
       >
-        <div className="bg-primary rounded-full p-0.5">
-          <Icon name="check" className="w-3 h-3 text-primary-foreground" />
-        </div>
-        <span className="text-sm font-semibold text-primary">
-          已复制
-        </span>
+        <Icon name="check" className="w-4 h-4 text-primary" />
+        <span className="text-sm font-semibold text-primary">已复制</span>
       </div>
     </div>
   </div>
 ));
 InfoRow.displayName = 'InfoRow';
 
-const BottomSheet = memo(({
+const Dialog = memo(({
   isOpen,
   onClose,
   title,
@@ -145,26 +140,16 @@ const BottomSheet = memo(({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-      <div
-        className="absolute inset-0 bg-black/50 transition-opacity duration-300"
-        onClick={onClose}
-      />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+      <div className="absolute inset-0 bg-black/80" onClick={onClose} />
 
-      <div className="relative w-full max-w-md bg-card border border-border rounded-t-2xl sm:rounded-2xl max-h-[85vh] flex flex-col shadow-xl overflow-hidden">
-        <div className="p-4 border-b border-border sticky top-0 z-10 shrink-0 bg-card">
-          <div className="w-10 h-1.5 bg-muted rounded-full mx-auto mb-4" />
-          <div className="relative flex items-center justify-center min-h-[24px]">
-            <h3 className="text-lg font-semibold text-foreground">
-              {title}
-            </h3>
-            {rightAction ? (
-              <div className="absolute right-0 top-1/2 -translate-y-1/2">{rightAction}</div>
-            ) : (
-              <button
-                onClick={onClose}
-                className="absolute right-0 top-1/2 -translate-y-1/2 p-2 hover:bg-accent rounded-md transition-colors"
-              >
+      <div className="relative w-full max-w-md bg-card border border-border rounded-t-lg sm:rounded-lg max-h-[85vh] flex flex-col shadow-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-border shrink-0">
+          <div className="w-12 h-1 bg-muted rounded-full mx-auto mb-4 sm:hidden" />
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">{title}</h3>
+            {rightAction || (
+              <button onClick={onClose} className="p-2 hover:bg-accent rounded-md transition-colors">
                 <Icon name="close" className="w-4 h-4" />
               </button>
             )}
@@ -177,7 +162,7 @@ const BottomSheet = memo(({
     </div>
   );
 });
-BottomSheet.displayName = 'BottomSheet';
+Dialog.displayName = 'Dialog';
 
 const ListItem = memo(({ label, isSelected, onClick, icon }: {
   label: string;
@@ -187,17 +172,13 @@ const ListItem = memo(({ label, isSelected, onClick, icon }: {
 }) => (
   <button
     onClick={onClick}
-    className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
-      isSelected
-        ? 'bg-primary text-primary-foreground font-medium'
-        : 'hover:bg-accent text-foreground'
+    className={`w-full flex items-center justify-between px-4 py-3 rounded-md transition-colors ${
+      isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
     }`}
   >
     <div className="flex items-center gap-3">
       {icon && (
-        <div className={`p-1.5 rounded-md ${isSelected ? 'bg-primary-foreground/20' : 'bg-muted'}`}>
-          <Icon name={icon} className={`w-4 h-4 ${isSelected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
-        </div>
+        <Icon name={icon} className={`w-4 h-4 ${isSelected ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
       )}
       <span className="text-sm">{label}</span>
     </div>
@@ -216,17 +197,15 @@ const CountryList = memo(({ countries, selectedCode, onSelect }: {
       <button
         key={country.code}
         onClick={() => onSelect(country)}
-        className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors border ${
+        className={`w-full flex items-center justify-between p-3 rounded-md transition-colors border ${
           selectedCode === country.code
-            ? 'bg-primary/10 border-primary'
-            : 'bg-card border-border hover:bg-accent'
+            ? 'bg-accent border-primary'
+            : 'border-transparent hover:bg-accent'
         }`}
       >
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <CountryFlag countryCode={country.code} className="w-10 h-7 shrink-0" />
-          <span className="text-sm font-medium truncate">
-            {country.name}
-          </span>
+          <span className="text-sm font-medium truncate">{country.name}</span>
         </div>
         {selectedCode === country.code && (
           <Icon name="check" className="w-5 h-5 text-primary shrink-0 ml-2" />
@@ -295,9 +274,7 @@ const DomainList = memo(({ allDomains, selectedDomain, onSelect }: {
     <div className="flex flex-col h-full">
       <div className="px-4 pb-2 sticky top-0 z-10 bg-card">
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icon name="search" className="w-4 h-4 text-muted-foreground" />
-          </div>
+          <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             value={searchQuery}
@@ -308,11 +285,9 @@ const DomainList = memo(({ allDomains, selectedDomain, onSelect }: {
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              className="absolute right-3 top-1/2 -translate-y-1/2"
             >
-              <div className="bg-muted rounded-full p-0.5">
-                <Icon name="close" className="w-3 h-3" />
-              </div>
+              <Icon name="close" className="w-4 h-4 text-muted-foreground" />
             </button>
           )}
         </div>
@@ -348,7 +323,7 @@ const DomainList = memo(({ allDomains, selectedDomain, onSelect }: {
 });
 DomainList.displayName = 'DomainList';
 
-export default function GlassStylePage() {
+export default function HomePage() {
   const [selectedCountry, setSelectedCountry] = useState<CountryConfig>(countries[0]);
   const [selectedDomain, setSelectedDomain] = useState<string>('random');
   const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -465,21 +440,16 @@ export default function GlassStylePage() {
   }, []);
 
   return (
-    <div className="min-h-screen relative pb-10">
-
+    <div className="min-h-screen pb-10">
       <FreeNoticeModal />
 
       <div className="relative z-10">
-
-        <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+        <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container flex h-14 items-center justify-between px-4">
-            <h1 className="text-lg font-semibold">
-              脸书小助手
-            </h1>
-
+            <h1 className="text-lg font-semibold">脸书小助手</h1>
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted text-xs font-medium">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted text-xs font-medium">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                 <span className="font-mono">{ipInfo.ip}</span>
               </div>
               <MenuButton onClick={() => { haptic(20); setShowMenu(true); }} />
@@ -488,7 +458,6 @@ export default function GlassStylePage() {
         </header>
 
         <main className="container max-w-2xl mx-auto px-4 pt-6 pb-10 space-y-6">
-
           {!isInitialized ? (
             <div className="flex flex-col items-center justify-center py-32 space-y-4">
               <div className="w-8 h-8 border-2 border-muted border-t-primary rounded-full animate-spin" />
@@ -496,39 +465,30 @@ export default function GlassStylePage() {
             </div>
           ) : (
             <>
-              <section className="bg-card rounded-lg border border-border shadow-sm">
-                <div className="divide-y divide-border">
+              <section className="bg-card rounded-lg border shadow-sm">
+                <div className="divide-y">
                   <InfoRow label="姓氏" value={userInfo.lastName} onCopy={() => copyToClipboard(userInfo.lastName, '姓氏')} isCopied={copiedField === '姓氏'} />
                   <InfoRow label="名字" value={userInfo.firstName} onCopy={() => copyToClipboard(userInfo.firstName, '名字')} isCopied={copiedField === '名字'} />
                   <InfoRow label="生日" value={userInfo.birthday} onCopy={() => copyToClipboard(userInfo.birthday, '生日')} isCopied={copiedField === '生日'} />
                   <InfoRow label="手机号" value={userInfo.phone} onCopy={() => copyToClipboard(userInfo.phone, '手机号')} isCopied={copiedField === '手机号'} />
                   <InfoRow label="密码" value={userInfo.password} onCopy={() => copyToClipboard(userInfo.password, '密码')} isCopied={copiedField === '密码'} />
 
-                  <div className="relative flex flex-col p-4">
+                  <div className="flex flex-col p-4">
                     <div
                       className="flex items-center justify-between mb-3 cursor-pointer"
                       onClick={() => copyToClipboard(userInfo.email, '邮箱')}
                     >
-                      <span className="text-sm font-medium text-muted-foreground w-20 shrink-0">
-                        邮箱
-                      </span>
-
+                      <span className="text-sm font-medium text-muted-foreground w-20 shrink-0">邮箱</span>
                       <div className="flex items-center gap-3 min-w-0 flex-1 justify-end h-6 relative overflow-hidden">
-                        <span
-                          className={`absolute right-0 text-sm font-semibold truncate transition-all duration-300 ${
-                            copiedField === '邮箱' ? 'opacity-0 translate-y-4 scale-95' : 'opacity-100 translate-y-0 scale-100 text-foreground'
-                          }`}
-                        >
+                        <span className={`absolute right-0 text-sm font-semibold truncate transition-all duration-200 ${
+                          copiedField === '邮箱' ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
+                        }`}>
                           {userInfo.email}
                         </span>
-                        <div
-                          className={`absolute right-0 flex items-center gap-1.5 transition-all duration-300 ${
-                            copiedField === '邮箱' ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-90 pointer-events-none'
-                          }`}
-                        >
-                          <div className="bg-primary rounded-full p-0.5">
-                            <Icon name="check" className="w-3 h-3 text-primary-foreground" />
-                          </div>
+                        <div className={`absolute right-0 flex items-center gap-1.5 transition-all duration-200 ${
+                          copiedField === '邮箱' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+                        }`}>
+                          <Icon name="check" className="w-4 h-4 text-primary" />
                           <span className="text-sm font-semibold text-primary">已复制</span>
                         </div>
                       </div>
@@ -539,8 +499,8 @@ export default function GlassStylePage() {
                         onClick={handleInboxClick}
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors border ${
                           inboxStatus === 'opening'
-                            ? 'bg-green-500/10 border-green-500/50 text-green-600'
-                            : 'bg-primary/10 border-primary text-primary hover:bg-primary/20'
+                            ? 'bg-green-50 border-green-200 text-green-700'
+                            : 'bg-primary/10 border-primary/20 text-primary hover:bg-primary/20'
                         }`}
                       >
                         {inboxStatus === 'opening' ? (
@@ -562,29 +522,23 @@ export default function GlassStylePage() {
 
               <button
                 onClick={generate}
-                className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
               >
                 <Icon name="sparkles" className="w-5 h-5" />
                 生成新身份
               </button>
 
               <section className="space-y-3">
-                <h2 className="text-sm font-medium text-muted-foreground px-1">
-                  生成设置
-                </h2>
-                <div className="bg-card rounded-lg border border-border shadow-sm divide-y divide-border">
+                <h2 className="text-sm font-medium text-muted-foreground px-1">生成设置</h2>
+                <div className="bg-card rounded-lg border shadow-sm divide-y">
                   <button
                     onClick={() => { haptic(20); setShowCountrySheet(true); }}
                     className="w-full flex items-center justify-between p-4 hover:bg-accent transition-colors"
                   >
-                    <span className="text-sm font-medium">
-                      选择地区
-                    </span>
+                    <span className="text-sm font-medium">选择地区</span>
                     <div className="flex items-center gap-2">
                       <CountryFlag countryCode={selectedCountry.code} className="w-7 h-5" />
-                      <span className="text-sm text-muted-foreground">
-                        {selectedCountry.name}
-                      </span>
+                      <span className="text-sm text-muted-foreground">{selectedCountry.name}</span>
                       <Icon name="chevronRight" className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </button>
@@ -592,13 +546,9 @@ export default function GlassStylePage() {
                     onClick={() => { haptic(20); setShowDomainSheet(true); }}
                     className="w-full flex items-center justify-between p-4 hover:bg-accent transition-colors"
                   >
-                    <span className="text-sm font-medium">
-                      邮箱域名
-                    </span>
+                    <span className="text-sm font-medium">邮箱域名</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">
-                        {displayDomain}
-                      </span>
+                      <span className="text-sm text-muted-foreground">{displayDomain}</span>
                       <Icon name="chevronRight" className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </button>
@@ -610,7 +560,7 @@ export default function GlassStylePage() {
                   href="https://t.me/fang180"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline font-medium"
                 >
                   <Icon name="link" className="w-4 h-4" />
                   加入 Telegram 频道
@@ -624,37 +574,22 @@ export default function GlassStylePage() {
         </main>
       </div>
 
-      <BottomSheet
-        isOpen={showCountrySheet}
-        onClose={() => setShowCountrySheet(false)}
-        title="选择地区"
-      >
-        <CountryList
-          countries={countries}
-          selectedCode={selectedCountry.code}
-          onSelect={handleCountrySelect}
-        />
-      </BottomSheet>
+      <Dialog isOpen={showCountrySheet} onClose={() => setShowCountrySheet(false)} title="选择地区">
+        <CountryList countries={countries} selectedCode={selectedCountry.code} onSelect={handleCountrySelect} />
+      </Dialog>
 
-      <BottomSheet
+      <Dialog
         isOpen={showDomainSheet}
         onClose={() => setShowDomainSheet(false)}
         title="选择域名"
         rightAction={
-          <button
-            onClick={() => setShowDomainSheet(false)}
-            className="text-primary font-medium text-sm px-2 py-1 hover:bg-accent rounded-md transition-colors"
-          >
+          <button onClick={() => setShowDomainSheet(false)} className="text-primary font-medium text-sm px-2 py-1 hover:bg-accent rounded-md transition-colors">
             完成
           </button>
         }
       >
-        <DomainList
-          allDomains={allDomains}
-          selectedDomain={selectedDomain}
-          onSelect={handleDomainSelect}
-        />
-      </BottomSheet>
+        <DomainList allDomains={allDomains} selectedDomain={selectedDomain} onSelect={handleDomainSelect} />
+      </Dialog>
 
       <NavigationMenu isOpen={showMenu} onClose={() => setShowMenu(false)} />
     </div>
